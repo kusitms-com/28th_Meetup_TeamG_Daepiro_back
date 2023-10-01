@@ -67,7 +67,6 @@ jobs:
         if: contains(github.ref, 'main')
         run: ./gradlew build -x test
 
-
       ## docker build & push to production
       - name: Docker build & push to prod
         if: contains(github.ref, 'main')
