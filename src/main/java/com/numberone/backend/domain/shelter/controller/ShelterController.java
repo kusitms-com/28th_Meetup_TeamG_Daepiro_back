@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "shelters", description = "대피소 관련 API")
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/shelters")
+@RequestMapping("/api/shelters")
 @RestController
 public class ShelterController {
     private final ShelterService shelterService;
@@ -32,6 +32,8 @@ public class ShelterController {
             distance 는 미터(m) 단위이며 1500 m 이내 대피소만 검색합니다.
             
             검색 결과가 0 개인 경우, NotFound 예외를 터뜨립니다.
+            
+            access token 을 헤더에 담아서 요청해주세요.
                     
             """)
     @PostMapping
@@ -54,6 +56,7 @@ public class ShelterController {
             
             검색 결과가 0 개인 경우, NotFound 예외를 터뜨립니다.
                     
+            access token 을 헤더에 담아서 요청해주세요.
             """)
     @PostMapping("/list")
     public ResponseEntity<NearbyShelterListResponse> getNearbyShelterList(
