@@ -2,10 +2,7 @@ package com.numberone.backend.domain.token.util;
 
 import com.numberone.backend.domain.token.service.TokenService;
 import com.numberone.backend.properties.JwtProperties;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,12 +28,29 @@ public class JwtUtil {
                 .compact();
     }
 
-    public String getEmail(String token) {
-        return getClaims(token).getSubject();
+
+    public boolean isValid(String token) {
+        try {
+            getClaims(token);
+            return true;
+        } catch (ExpiredJwtException e) {
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public boolean isExpired(String token) {
-        return getClaims(token).getExpiration().before(new Date());
+        try {
+            Jws<Claims> claims = Jwts.parser().setSigningKey(jwtProperties.getSecret().getBytes()).parseClaimsJws(token);
+            return getClaims(token).getExpiration().before(new Date());
+        } catch (ExpiredJwtException e) {
+            return true;
+        }
+    }
+
+    public String getEmail(String token) {
+        return getClaims(token).getSubject();
     }
 
     private Claims getClaims(String token) {
