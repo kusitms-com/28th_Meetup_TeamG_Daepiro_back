@@ -1,13 +1,16 @@
 package com.numberone.backend.support;
 
+import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.numberone.backend.exception.badrequest.FileMissingException;
 import com.numberone.backend.exception.badrequest.FileUploadException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.entity.ContentType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -54,10 +57,32 @@ public class S3Provider {
         return amazonS3Client.getUrl(bucket, fileName).toString();
     }
 
+    public String uploadJsonFile(String originName, InputStream inputStream) {
+        ObjectMetadata objectMetadata = new ObjectMetadata();
+        objectMetadata.setContentType(ContentType.APPLICATION_JSON.toString());
+
+        amazonS3Client.putObject(new PutObjectRequest(bucket, originName, inputStream, objectMetadata)
+                .withCannedAcl(CannedAccessControlList.PublicRead));
+
+        return amazonS3Client.getUrl(bucket, originName).toString();
+    }
+
     private void checkInvalidUploadFile(MultipartFile multipartFile) {
         if (multipartFile.isEmpty() || multipartFile.getSize() == 0) {
             throw new FileMissingException();
         }
     }
 
+    public String getS3FileUrl(String fileName) {
+        java.util.Date expiration = new java.util.Date();
+        long expTimeMillis = expiration.getTime();
+        expTimeMillis += 1000 * 60 * 60; /* 해당 링크는 1 시간 동안만 유효 합니다. */
+
+        GeneratePresignedUrlRequest generatePresignedUrlRequest =
+                new GeneratePresignedUrlRequest(bucket, fileName)
+                        .withMethod(HttpMethod.GET)
+                        .withExpiration(new java.util.Date(expTimeMillis));
+
+        return amazonS3Client.generatePresignedUrl(generatePresignedUrlRequest).toString();
+    }
 }
