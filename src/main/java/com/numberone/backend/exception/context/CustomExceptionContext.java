@@ -31,6 +31,10 @@ public enum CustomExceptionContext implements ExceptionContext {
     // fcm 관련 예외
     FIREBASE_INITIALIZATION_FAILED("Firebase Application 초기 설정에 실패하였습니다.", 6000),
     FIREBASE_MESSAGE_SEND_ERROR("Fcm 푸시 메세지를 보내는 과정에서 오류가 발생했습니다.", 6001),
+
+    //후원 페이지 관련 예외
+    NOT_FOUND_SUPPORT("존재하지 않는 후원 관계입니다.", 7000),
+    NOT_FOUND_SPONSOR("존재하지 않는 후원입니다.", 7001)
     ;
 
     private final String message;
