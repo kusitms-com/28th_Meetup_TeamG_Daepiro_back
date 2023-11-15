@@ -14,6 +14,7 @@ public enum CustomExceptionContext implements ExceptionContext {
     EXPIRED_ACCESS_TOKEN("만료된 액세스 토큰입니다. 리프레쉬 토큰을 이용하여 갱신해주세요.", 2002),
     WRONG_REFRESH_TOKEN("존재하지 않거나 만료된 리프레쉬 토큰입니다. 다시 리프레쉬 토큰을 발급받아주세요.", 2003),
     BAD_REQUEST_SOCIAL_TOKEN("요청하신 네이버 또는 카카오 소셜 토큰이 유효하지 않습니다.", 2004),
+    BAD_USER_AUTHENTICATION("해당 토큰의 인증 정보가 유효하지 않습니다.", 2005),
 
     // SHELTER 관련 예외
     NOT_FOUND_SHELTER("주변에 가까운 대피소가 존재하지 않습니다.", 3000),
@@ -35,7 +36,20 @@ public enum CustomExceptionContext implements ExceptionContext {
     //후원 페이지 관련 예외
     NOT_FOUND_SUPPORT("존재하지 않는 후원 관계입니다.", 7000),
     NOT_FOUND_SPONSOR("존재하지 않는 후원입니다.", 7001),
-    BAD_REQUEST_HEART("후원을 하기에는 사용자의 마음 갯수가 부족합니다.",7002)
+    BAD_REQUEST_HEART("후원을 하기에는 사용자의 마음 갯수가 부족합니다.",7002),
+
+    // article 관련 예외
+    NOT_FOUND_ARTICLE("해당 게시글을 찾을 수 없습니다.", 8000),
+
+    // article image 관련 예외
+    NOT_FOUND_ARTICLE_IMAGE("해당 이미지를 찾을 수 없습니다.", 9000),
+
+    // comment 관련 예외
+    NOT_FOUND_COMMENT("해당 댓글을 찾을 수 없습니다.", 10000),
+
+    // like 관련 예외
+    ALREADY_LIKED_ERROR("이미 좋아요 처리된 엔티티입니다.", 11000),
+    ALREADY_UNLIKED_ERROR("이미 좋아요 해제 처리된 엔티티입니다.", 11001),
     ;
 
     private final String message;

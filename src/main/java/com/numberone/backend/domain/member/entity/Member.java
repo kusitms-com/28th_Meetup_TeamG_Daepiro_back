@@ -1,9 +1,16 @@
 package com.numberone.backend.domain.member.entity;
 
+import com.numberone.backend.config.basetime.BaseTimeEntity;
+import com.numberone.backend.domain.like.entity.ArticleLike;
+import com.numberone.backend.domain.like.entity.CommentLike;
+import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import com.numberone.backend.domain.notificationdisaster.entity.NotificationDisaster;
 import com.numberone.backend.domain.notificationregion.entity.NotificationRegion;
 import com.numberone.backend.domain.support.entity.Support;
-import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,10 +20,12 @@ import org.hibernate.annotations.Comment;
 import java.util.ArrayList;
 import java.util.List;
 
+@Comment("회원 정보")
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class Member {
+@Table(name = "MEMBER")
+public class Member extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -35,6 +44,18 @@ public class Member {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Support> supports = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    private List<CommentLike> commentLikes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    private List<ArticleLike> articleLikes = new ArrayList<>();
+
+    @Comment("회원 프로필 사진 URL")
+    private String profileImageUrl;
+
+    @Comment("FCM 토큰")
+    private String fcmToken;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<NotificationDisaster> notificationDisasters = new ArrayList<>();
@@ -58,8 +79,12 @@ public class Member {
                 .build();
     }
 
-    public void updateNickname(String nickname) {
-        this.nickName = nickname;
+    public void updateProfileImageUrl(String imageUrl) {
+        this.profileImageUrl = imageUrl;
+    }
+
+    public void updateNickName(String nickName) {
+        this.nickName = nickName;
     }
 
     public void plusHeart(int heart) {
