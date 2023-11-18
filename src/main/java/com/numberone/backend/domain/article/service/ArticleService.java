@@ -19,7 +19,10 @@ import com.numberone.backend.domain.like.repository.ArticleLikeRepository;
 import com.numberone.backend.domain.member.entity.Member;
 import com.numberone.backend.domain.member.repository.MemberRepository;
 import com.numberone.backend.domain.notification.entity.NotificationTag;
+import com.numberone.backend.domain.notificationregion.entity.NotificationRegion;
+import com.numberone.backend.domain.notificationregion.repository.NotificationRegionRepository;
 import com.numberone.backend.domain.token.util.SecurityContextProvider;
+import com.numberone.backend.exception.conflict.UnauthorizedLocationException;
 import com.numberone.backend.exception.notfound.NotFoundArticleException;
 import com.numberone.backend.exception.notfound.NotFoundMemberException;
 import com.numberone.backend.support.fcm.service.FcmMessageProvider;
@@ -53,6 +56,7 @@ public class ArticleService {
     private final ArticleImageRepository articleImageRepository;
     private final CommentRepository commentRepository;
     private final ArticleLikeRepository articleLikeRepository;
+    private final NotificationRegionRepository notificationRegionRepository;
     private final S3Provider s3Provider;
     private final LocationProvider locationProvider;
     private final FcmMessageProvider fcmMessageProvider;
@@ -107,15 +111,31 @@ public class ArticleService {
         // 4. 작성자 주소 설정
         Double latitude = request.getLatitude();
         Double longitude = request.getLongitude();
-        if (latitude != null && longitude != null) {
+        String address = "";
+        if (latitude != null && longitude != null && request.isRegionAgreementCheck()) {
             // 주소가 null 이 아닌 경우에만 api 요청하여 update
-            String address = locationProvider.pos2address(request.getLatitude(), request.getLongitude());
+            address = locationProvider.pos2address(request.getLatitude(), request.getLongitude());
             article.updateAddress(address);
+        }
+
+        if (!address.isEmpty()) {
+            String[] regionInfo = address.split(" ");
+            article.updateAddressDetail(regionInfo);
+            validateLocation(owner, address);
         }
 
         return UploadArticleResponse.of(article, imageUrls, thumbNailImageUrl);
     }
 
+    public void validateLocation(Member member, String realLocation) {
+        List<String> regionLv2List = member.getNotificationRegions()
+                .stream().map(NotificationRegion::getLv2).toList();
+        String[] realRegions = realLocation.split(" ");
+
+        if (realRegions.length >= 1 && !regionLv2List.contains(realRegions[1])) {
+            throw new UnauthorizedLocationException();
+        }
+    }
 
     @Transactional
     public DeleteArticleResponse deleteArticle(Long articleId) {
@@ -193,10 +213,12 @@ public class ArticleService {
         CommentEntity savedComment = commentRepository.save(
                 new CommentEntity(request.getContent(), article, member)
         );
+        Member articleOwner = memberRepository.findById(article.getArticleOwnerId())
+                .orElseThrow(NotFoundMemberException::new);
 
         articleParticipantRepository.save(new ArticleParticipant(article, member));
         // 게시글 작성자에게 알림을 보낸다.
-        fcmMessageProvider.sendFcm(member, ARTICLE_COMMENT_FCM_ALARM, NotificationTag.COMMUNITY);
+        fcmMessageProvider.sendFcm(articleOwner, ARTICLE_COMMENT_FCM_ALARM, NotificationTag.COMMUNITY);
         return CreateCommentResponse.of(savedComment);
     }
 

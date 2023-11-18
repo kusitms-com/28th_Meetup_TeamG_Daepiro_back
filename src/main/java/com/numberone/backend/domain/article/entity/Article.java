@@ -54,6 +54,15 @@ public class Article extends BaseTimeEntity {
     @Comment("게시글 작성 당시 주소")
     private String address;
 
+    @Comment("시/도")
+    private String lv1;
+
+    @Comment("구/군")
+    private String lv2;
+
+    @Comment("동/읍/면")
+    private String lv3;
+
     @ColumnDefault("0")
     @Comment("게시글 좋아요 개수")
     private Integer likeCount;
@@ -87,6 +96,13 @@ public class Article extends BaseTimeEntity {
 
     public void updateAddress(String address) {
         this.address = address;
+    }
+
+    public void updateAddressDetail (String[] addressDetails) {
+        int length = addressDetails.length;
+        this.lv1 = length > 0 ? addressDetails[0] : "";
+        this.lv2 = length > 1 ? addressDetails[1] : "";
+        this.lv3 = length > 2 ? addressDetails[2] : "";
     }
 
     public void increaseLikeCount() {
