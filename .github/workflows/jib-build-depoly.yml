@@ -1,10 +1,9 @@
-# github repository Actions 페이지에 나타낼 이름
-name: NumberOne-Backend-CICD
+name: NumberOne-Backend-JIB-BUILD-DEPLOY
 
 # event trigger
 on:
   push:
-    branches: [ " " ] # none
+    branches: [ "main", "dev", "dev-check" ]
 
 permissions: write-all
 
@@ -29,31 +28,18 @@ jobs:
             ~/.gradle/wrapper
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
-            ${{ runner.os }}-gradle-
+            ${{ runner.os }}-gradle-          
 
       - name: 🐧 Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: 🔧 Build with Gradle
-        run: ./gradlew build -x test
-        shell: bash
-
-      - name:  🐙 docker-compose.yml to EC2 server
-#        if: contains(github.ref, 'main')
-        uses: appleboy/scp-action@master
+      - name: 🔑 Login to Docker Hub
+        uses: docker/login-action@v2.1.0
         with:
-          username: ubuntu
-          host: ${{ secrets.EC2_HOST }}
-          key: ${{ secrets.EC2_PRIVATE_KEY }}
-          port: ${{ secrets.EC2_PORT }}
-          envs: GITHUB_SHA
-          source: "./docker-compose.yml"
-          target: "/home/ubuntu/"
-          overwrite: true
-          timeout: 1m
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: 🐧 create application.yml
-#        if: contains(github.ref, 'main')
         run: |
           mkdir ./src/main/resources
           cd ./src/main/resources
@@ -70,25 +56,28 @@ jobs:
           ls -la
         shell: bash
 
-      - name: 🐧 Build With Gradle
-#        if: contains(github.ref, 'main')
-        run: ./gradlew build -x test
-
-
-      ## docker build & push to production
-      - name: 🐋 Docker build & push to prod
-#        if: contains(github.ref, 'main')
+      - name: Build with jib
         run: |
-          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker build -f Dockerfile -t ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE }} .
-          docker push ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE }}
-      
+          ./gradlew jib -x test \
+          -Djib.to.auth.username=${{ secrets.DOCKER_USERNAME }} \
+          -Djib.to.auth.password=${{ secrets.DOCKER_PASSWORD }} \
+          -Djib.to.image="${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE }}:latest"
+
+      - name: Get current time
+        uses: 1466587594/get-current-time@v2
+        id: current-time
+        with:
+          format: YYYY-MM-DDTHH-mm-ss
+          utcOffset: "+09:00"
+
+      - name: Show Current Time
+        run: echo "CurrentTime=${{steps.current-time.outputs.formattedTime}}"
+        shell: bash
 
       ## deploy to production
       - name: 🌿 Deploy
         uses: appleboy/ssh-action@master
         id: deploy-prod
-#        if: contains(github.ref, 'main')
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
@@ -96,7 +85,7 @@ jobs:
           envs: GITHUB_SHA
           script: |
             sudo docker rm -f $(docker ps -qa)
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE }}
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE }}:latest
             docker-compose up -d
             docker image prune -f
 
