@@ -1,6 +1,6 @@
 package com.numberone.backend.domain.friendship.service;
 
-import com.numberone.backend.domain.friendship.dto.response.GetFriendsResponse;
+import com.numberone.backend.domain.friendship.dto.response.FriendResponse;
 import com.numberone.backend.domain.friendship.dto.response.InviteFriendResponse;
 import com.numberone.backend.domain.friendship.entity.Friendship;
 import com.numberone.backend.domain.friendship.repository.FriendshipRepository;
@@ -8,16 +8,19 @@ import com.numberone.backend.domain.member.entity.Member;
 import com.numberone.backend.domain.member.repository.MemberRepository;
 import com.numberone.backend.domain.notification.entity.NotificationTag;
 import com.numberone.backend.domain.token.util.SecurityContextProvider;
+import com.numberone.backend.exception.badrequest.InvalidInviteTypeException;
 import com.numberone.backend.exception.notfound.NotFoundMemberException;
 import com.numberone.backend.support.fcm.service.FcmMessageProvider;
-import com.numberone.backend.support.notification.NotificationMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -35,23 +38,29 @@ public class FriendshipService {
                 .orElseThrow(NotFoundMemberException::new);
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(NotFoundMemberException::new);
+
+        List<Member> friendList = member.getFriendships().stream().map(Friendship::getFriend).toList();
+        List<Long> friendIdList = friendList.stream().map(Member::getId).toList();
+
+        if (member.getId() == invitedMember.getId() || friendIdList.contains(invitedMember.getId())) {
+            throw new InvalidInviteTypeException();
+        }
+
+
         Friendship savedFriendship = friendshipRepository.save(Friendship.createFriendship(member, invitedMember));
+        friendshipRepository.save(Friendship.createFriendship(invitedMember, member));
         return InviteFriendResponse.of(savedFriendship);
     }
 
-    public GetFriendsResponse getFriends() {
+    public List<FriendResponse> getFriends() {
         String principal = SecurityContextProvider.getAuthenticatedUserEmail();
         Member member = memberRepository.findByEmail(principal)
                 .orElseThrow(NotFoundMemberException::new);
-        List<GetFriendsResponse.MemberDto> friends = member.getFriendships()
+        return member.getFriendships()
                 .stream().map(friendship -> {
                     Member friend = friendship.getFriend();
-                    return GetFriendsResponse.MemberDto.of(friend);
-                })
-                .toList();
-        return GetFriendsResponse.builder()
-                .friends(friends)
-                .build();
+                    return FriendResponse.of(friend);
+                }).distinct().collect(Collectors.toList());
     }
 
     @Transactional

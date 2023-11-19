@@ -77,9 +77,6 @@ public class Member extends BaseTimeEntity {
     @Comment("경도")
     private Double longitude;
 
-    @Comment("현 위치")
-    private String address;
-
     @Comment("안전 상태")
     private Boolean isSafety;
 
@@ -130,10 +127,10 @@ public class Member extends BaseTimeEntity {
         heartCnt -= heart;
     }
 
-    public void updateGps(double latitude, double longitude, String address) {
+    public void updateGps(double latitude, double longitude, String location) {
         this.latitude = latitude;
         this.longitude = longitude;
-        this.address = address;
+        this.location = location;
         this.lastlyUpdatedLocationAt = LocalDateTime.now();
     }
 

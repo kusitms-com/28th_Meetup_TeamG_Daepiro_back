@@ -1,6 +1,6 @@
 package com.numberone.backend.domain.friendship.controller;
 
-import com.numberone.backend.domain.friendship.dto.response.GetFriendsResponse;
+import com.numberone.backend.domain.friendship.dto.response.FriendResponse;
 import com.numberone.backend.domain.friendship.dto.response.InviteFriendResponse;
 import com.numberone.backend.domain.friendship.service.FriendshipService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -35,7 +36,7 @@ public class FriendshipController {
             jwt 토큰을 반드시 넣어서 요청해주세요.
             """)
     @GetMapping
-    public ResponseEntity<GetFriendsResponse> getFriends(){
+    public ResponseEntity<List<FriendResponse>> getFriends(){
         return ResponseEntity.ok(friendshipService.getFriends());
     }
 
