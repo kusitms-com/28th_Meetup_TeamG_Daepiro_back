@@ -63,9 +63,16 @@ public class Member extends BaseTimeEntity {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<ConversationLike> conversationLikes = new ArrayList<>();
 
+    @Comment("온/오프라인 유무")
     private Boolean session;
 
-    public void update(Boolean session) {
+    @Comment("위도")
+    private Double latitude;
+
+    @Comment("경도")
+    private Double longitude;
+
+    public void updateSession(Boolean session) {
         this.session = session;
     }
 
@@ -76,7 +83,9 @@ public class Member extends BaseTimeEntity {
         this.realName = realName;
         this.heartCnt = heartCnt;
         this.fcmToken = fcmToken;
-        this.session = false;
+        this.session = true;
+        this.latitude = 0D;
+        this.longitude = 0D;
     }
 
     public static Member of(String email, String realName) {
@@ -102,5 +111,10 @@ public class Member extends BaseTimeEntity {
 
     public void minusHeart(int heart) {
         heartCnt -= heart;
+    }
+
+    public void updateGps(double latitude, double longitude) {
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 }

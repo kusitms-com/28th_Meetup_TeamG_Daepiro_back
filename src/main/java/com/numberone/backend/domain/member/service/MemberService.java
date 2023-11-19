@@ -1,12 +1,10 @@
 package com.numberone.backend.domain.member.service;
 
 import com.numberone.backend.domain.disaster.util.DisasterType;
-import com.numberone.backend.domain.member.dto.request.BuyHeartRequest;
-import com.numberone.backend.domain.member.dto.request.OnboardingAddress;
-import com.numberone.backend.domain.member.dto.request.OnboardingDisasterType;
-import com.numberone.backend.domain.member.dto.request.OnboardingRequest;
+import com.numberone.backend.domain.member.dto.request.*;
 import com.numberone.backend.domain.member.dto.response.GetNotificationRegionResponse;
 import com.numberone.backend.domain.member.dto.response.HeartCntResponse;
+import com.numberone.backend.domain.member.dto.response.MemberIdResponse;
 import com.numberone.backend.domain.member.dto.response.UploadProfileImageResponse;
 import com.numberone.backend.domain.member.entity.Member;
 import com.numberone.backend.domain.member.repository.MemberRepository;
@@ -103,4 +101,22 @@ public class MemberService {
         return GetNotificationRegionResponse.of(member.getNotificationRegions());
     }
 
+    @Transactional
+    public MemberIdResponse online(String email) {
+        Member member  = findByEmail(email);
+        member.updateSession(true);
+        return MemberIdResponse.of(member.getId());
+    }
+
+    @Transactional
+    public void offline(String email) {
+        Member member  = findByEmail(email);
+        member.updateSession(false);
+    }
+
+    @Transactional
+    public void updateGps(String email, UpdateGpsRequest updateGpsRequest) {
+        Member member = findByEmail(email);
+        member.updateGps(updateGpsRequest.getLatitude(), updateGpsRequest.getLongitude());
+    }
 }
