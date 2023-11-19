@@ -15,6 +15,7 @@ import com.numberone.backend.domain.notificationregion.repository.NotificationRe
 import com.numberone.backend.domain.token.util.SecurityContextProvider;
 import com.numberone.backend.exception.notfound.NotFoundMemberException;
 import com.numberone.backend.support.s3.S3Provider;
+import com.numberone.backend.util.LocationProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,7 @@ public class MemberService {
     private final S3Provider s3Provider;
     private final NotificationDisasterRepository notificationDisasterRepository;
     private final NotificationRegionRepository notificationRegionRepository;
+    private final LocationProvider locationProvider;
 
     public Member findByEmail(String email) {
         return memberRepository.findByEmail(email)
@@ -117,6 +119,9 @@ public class MemberService {
     @Transactional
     public void updateGps(String email, UpdateGpsRequest updateGpsRequest) {
         Member member = findByEmail(email);
-        member.updateGps(updateGpsRequest.getLatitude(), updateGpsRequest.getLongitude());
+        Double latitude = updateGpsRequest.getLatitude();
+        Double longitude = updateGpsRequest.getLongitude();
+        String location = locationProvider.pos2address(latitude, longitude);
+        member.updateGps(latitude, longitude, location);
     }
 }
