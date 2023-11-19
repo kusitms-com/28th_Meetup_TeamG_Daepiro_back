@@ -1,6 +1,7 @@
 package com.numberone.backend.domain.member.entity;
 
 import com.numberone.backend.config.basetime.BaseTimeEntity;
+import com.numberone.backend.domain.friendship.entity.Friendship;
 import com.numberone.backend.domain.like.entity.ArticleLike;
 import com.numberone.backend.domain.like.entity.CommentLike;
 import com.numberone.backend.domain.like.entity.ConversationLike;
@@ -14,6 +15,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,6 +50,9 @@ public class Member extends BaseTimeEntity {
     @OneToMany(mappedBy = "member", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<ArticleLike> articleLikes = new ArrayList<>();
 
+    @OneToMany(mappedBy = "member", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    private List<Friendship> friendships = new ArrayList<>();
+
     @Comment("회원 프로필 사진 URL")
     private String profileImageUrl;
 
@@ -71,6 +76,15 @@ public class Member extends BaseTimeEntity {
 
     @Comment("경도")
     private Double longitude;
+
+    @Comment("안전 상태")
+    private Boolean isSafety;
+
+    @Comment("현재 위치")
+    private String location;
+
+    @Comment("최근 주소 업데이트 시각")
+    private LocalDateTime lastlyUpdatedLocationAt;
 
     public void updateSession(Boolean session) {
         this.session = session;
@@ -113,8 +127,14 @@ public class Member extends BaseTimeEntity {
         heartCnt -= heart;
     }
 
-    public void updateGps(double latitude, double longitude) {
+    public void updateGps(double latitude, double longitude, String location) {
         this.latitude = latitude;
         this.longitude = longitude;
+        this.location = location;
+        this.lastlyUpdatedLocationAt = LocalDateTime.now();
+    }
+
+    public void updateSafety(Boolean isSafety){
+        this.isSafety = isSafety;
     }
 }

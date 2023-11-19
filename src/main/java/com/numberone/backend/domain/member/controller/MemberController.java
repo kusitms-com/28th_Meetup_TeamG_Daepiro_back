@@ -3,6 +3,7 @@ package com.numberone.backend.domain.member.controller;
 import com.numberone.backend.domain.member.dto.request.OnboardingRequest;
 import com.numberone.backend.domain.member.dto.request.BuyHeartRequest;
 import com.numberone.backend.domain.member.dto.request.UpdateGpsRequest;
+import com.numberone.backend.domain.member.dto.request.UpdateSafetyRequest;
 import com.numberone.backend.domain.member.dto.response.GetNotificationRegionResponse;
 import com.numberone.backend.domain.member.dto.response.HeartCntResponse;
 import com.numberone.backend.domain.member.dto.response.MemberIdResponse;
@@ -110,4 +111,14 @@ public class MemberController {
     public void updateGps(Authentication authentication, @Valid @RequestBody UpdateGpsRequest updateGpsRequest){
         memberService.updateGps(authentication.getName(), updateGpsRequest);
     }
+
+    @Operation(summary = "사용자 안전상태 업데이트", description = """
+            사용자의 안전상태를 업데이트 하는 API 입니다.
+            """)
+    @PutMapping("/safety")
+    public ResponseEntity<Void> updateSafety(@Valid @RequestBody UpdateSafetyRequest request){
+        memberService.updateSafety(request);
+        return ResponseEntity.ok().build();
+    }
+
 }

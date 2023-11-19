@@ -55,7 +55,11 @@ public enum CustomExceptionContext implements ExceptionContext {
 
     //conversation 관련 예외
     NOT_FOUND_CONVERSATION("해당 대화를 찾을 수 없습니다.", 12000),
-    BAD_REQUEST_CONVERSATION_SORT("정렬 기준 값을 올바르게 전달해주세요. (popularity 또는 time)", 12001);
+    BAD_REQUEST_CONVERSATION_SORT("정렬 기준 값을 올바르게 전달해주세요. (popularity 또는 time)", 12001),
+
+    //friendship 관련 예외
+    INVALID_INVITE_TYPE("본인을 가족으로 등록할 수 없습니다. 또는 이미 가족/친구로 등록된 멤버를 재등록할 수 없습니다. ", 13001)
+    ;
 
     private final String message;
     private final int code;
