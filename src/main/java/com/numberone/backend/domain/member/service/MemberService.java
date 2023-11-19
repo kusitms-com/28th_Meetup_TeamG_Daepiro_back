@@ -124,4 +124,12 @@ public class MemberService {
         String location = locationProvider.pos2address(latitude, longitude);
         member.updateGps(latitude, longitude, location);
     }
+
+    @Transactional
+    public void updateSafety(UpdateSafetyRequest request){
+        String principal = SecurityContextProvider.getAuthenticatedUserEmail();
+        Member member = memberRepository.findByEmail(principal)
+                .orElseThrow(NotFoundMemberException::new);
+        member.updateSafety(request.getIsSafety());
+    }
 }

@@ -70,4 +70,5 @@ public class FriendshipService {
 
         fcmMessageProvider.sendFcm(friend, title, body, NotificationTag.FAMILY);
     }
+
 }

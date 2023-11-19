@@ -136,4 +136,8 @@ public class Member extends BaseTimeEntity {
         this.address = address;
         this.lastlyUpdatedLocationAt = LocalDateTime.now();
     }
+
+    public void updateSafety(Boolean isSafety){
+        this.isSafety = isSafety;
+    }
 }
