@@ -89,6 +89,9 @@ public class DisasterDataCollector {
                     break;
                 String[] locations = disaster.getLocationName().split(",");
                 for (String loc : locations) {
+                    if (disasterTypeMap.get(disasterNum).equals(DisasterType.OTHERS) &&
+                            (disaster.getMsg().contains("실종") || disaster.getMsg().contains("목격") || disaster.getMsg().contains("배회")))
+                        disasterTypeMap.put(disasterNum, DisasterType.MISSING);
                     disasterService.save(SaveDisasterRequest.of(
                             disasterTypeMap.get(disasterNum),
                             loc.replace(" 전체", ""),//이 부분은 메시지 내부 파싱하여 더 정확한 주소를 저장하도록 수정해야함
@@ -128,7 +131,7 @@ public class DisasterDataCollector {
 
     private void crawlingDisasterTypeV2() {
         disasterTypeMap.clear();
-        try (WebClient webClient = new WebClient()){
+        try (WebClient webClient = new WebClient()) {
             webClient.getOptions().setJavaScriptEnabled(true);
             webClient.getOptions().setCssEnabled(false);
             HtmlPage htmlPage = webClient.getPage(disasterProperties.getCrawlingUrl());
@@ -142,7 +145,7 @@ public class DisasterDataCollector {
                         DisasterType.kor2code(types.get(i).text())
                 );
             }
-        } catch (IOException e){
+        } catch (IOException e) {
             throw new NotFoundCrawlingException();
         }
     }
