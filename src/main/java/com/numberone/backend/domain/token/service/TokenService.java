@@ -44,11 +44,11 @@ public class TokenService {
         try {
             ResponseEntity<KakaoInfoResponse> response = restTemplate.exchange(kakaoProperties.getUser_api_url(), HttpMethod.GET, new HttpEntity<>(null, headers), KakaoInfoResponse.class);
             String email = response.getBody().getKakao_account().getEmail();
-            String realName = "실명을 가져올 수 없습니다.";
-            if(response.getBody().getKakao_account().getProfile() != null){
-                realName = response.getBody().getKakao_account().getProfile().getNickname();
-            }
-            return getTokenResponse(email, realName);
+//            String realName = "실명을 가져올 수 없습니다.";
+//            if(response.getBody().getKakao_account().getProfile() != null){
+//                realName = response.getBody().getKakao_account().getProfile().getNickname();
+//            }
+            return getTokenResponse(email);
         } catch (Exception e) {
             throw new BadRequestSocialTokenException();
         }
@@ -63,9 +63,9 @@ public class TokenService {
         try {
             ResponseEntity<NaverInfoResponse> response = restTemplate.exchange(naverProperties.getUser_api_url(), HttpMethod.GET, new HttpEntity<>(null, headers), NaverInfoResponse.class);
             String email = response.getBody().getResponse().getEmail();
-            String realName = Optional.ofNullable(response.getBody().getResponse().getName())
-                    .orElse("실명을 가져올 수 없습니다.");
-            return getTokenResponse(email, realName);
+//            String realName = Optional.ofNullable(response.getBody().getResponse().getName())
+//                    .orElse("실명을 가져올 수 없습니다.");
+            return getTokenResponse(email);
         } catch (Exception e) {
             throw new BadRequestSocialTokenException();
         }
@@ -85,18 +85,21 @@ public class TokenService {
         return RefreshTokenResponse.of(newAccessToken, newRefreshToken);
     }
 
-    private GetTokenResponse getTokenResponse(String email, String realname) {
-        if (!memberRepository.existsByEmail(email))
-            memberService.create(email, realname);
+    private GetTokenResponse getTokenResponse(String email) {
+        Boolean isNewMember = false;
+        if (!memberRepository.existsByEmail(email)) {
+            memberService.create(email);
+            isNewMember = true;
+        }
         if (tokenRepository.existsById(email)) {
             Token token = tokenRepository.findById(email)
                     .orElseThrow(WrongAccessTokenException::new);
-            return GetTokenResponse.of(token.getAccessToken(), token.getRefreshToken());
+            return GetTokenResponse.of(token.getAccessToken(), token.getRefreshToken(), isNewMember);
         } else {
             String refreshToken = jwtUtil.createToken(email, refreshPeroid);
             String accessToken = jwtUtil.createToken(email, accessPeroid);
             Token token = tokenRepository.save(Token.of(email, accessToken, refreshToken));
-            return GetTokenResponse.of(token.getAccessToken(), token.getRefreshToken());
+            return GetTokenResponse.of(token.getAccessToken(), token.getRefreshToken(), isNewMember);
         }
     }
 }
