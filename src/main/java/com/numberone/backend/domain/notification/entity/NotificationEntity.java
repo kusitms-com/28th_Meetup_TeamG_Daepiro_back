@@ -47,6 +47,9 @@ public class NotificationEntity extends BaseTimeEntity {
     @Comment("알림 종류 세부")
     private String tagDetail;
 
+    @Comment("알림 발생 지역")
+    private String location;
+
     public NotificationEntity(Member member, NotificationTag tag, String title, String body, Boolean isSent) {
         this.receivedMemberId = member.getId();
         this.nickName = member.getNickName();
@@ -61,13 +64,15 @@ public class NotificationEntity extends BaseTimeEntity {
     public NotificationEntity(Member member,
                               DisasterType disasterType,
                               String body,
-                              Boolean isSent) {
+                              Boolean isSent,
+                              String location) {
         this.receivedMemberId = member.getId();
         this.nickName = member.getNickName();
         this.notificationTag = NotificationTag.DISASTER;
         this.body = body;
         this.isSent = isSent;
         this.isRead = false;
+        this.location = location;
         switch (disasterType) {
             case DROUGHT -> this.tagDetail = "가뭄";
             case STRONG_WIND -> this.tagDetail = "강풍";

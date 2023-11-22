@@ -49,7 +49,7 @@ public class DisasterEventHandler {
             Member member = memberRepository.findById(memberId)
                     .orElseThrow(NotFoundMemberException::new);
             NotificationEntity savedNotificationEntity = notificationRepository.save(
-                    new NotificationEntity(member, disasterEvent.getType(), disasterEvent.getMessage(), true)
+                    new NotificationEntity(member, disasterEvent.getType(), disasterEvent.getMessage(), true, location)
             );
             member.updateSafety(false);
             log.info("received member id: {}  Notification id: {} ", member.getId(), savedNotificationEntity.getId());
@@ -110,7 +110,7 @@ public class DisasterEventHandler {
                                     region -> region.getLocation().contains(location)
                             );
                     notificationRepository.save(
-                            new NotificationEntity(member, disasterEvent.getType(), disasterEvent.getMessage(), true)
+                            new NotificationEntity(member, disasterEvent.getType(), disasterEvent.getMessage(), true, location)
                     );
                     return isMatched ? Stream.of(member.getFcmToken()) : Stream.empty();
                 }).filter(Objects::nonNull).toList();
