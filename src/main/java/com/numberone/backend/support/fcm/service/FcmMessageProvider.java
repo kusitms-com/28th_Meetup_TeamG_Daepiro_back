@@ -4,7 +4,9 @@ import com.google.firebase.messaging.*;
 import com.numberone.backend.domain.member.entity.Member;
 import com.numberone.backend.domain.notification.entity.NotificationTag;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -43,6 +45,11 @@ public class FcmMessageProvider {
             log.info("[FCM Message] {} : {}", title, body);
         } catch (Exception e) {
             log.error("Fcm 푸시 알람을 전송하는 도중에 에러가 발생했습니다. {}", e.getMessage());
+            try {
+                FirebaseMessaging.getInstance().send(message); // 재발송
+            } catch (Exception ex) {
+                return;
+            }
         }
     }
 
@@ -61,19 +68,20 @@ public class FcmMessageProvider {
                         .setToken(token)
                         .build()
         ).toList();
-
         try {
             BatchResponse response = FirebaseMessaging.getInstance().sendAll(messages);
             if (response.getFailureCount() > 0) {
                 /* 발송 실패한 경우 핸들링 */
                 List<SendResponse> responses = response.getResponses();
-                List<String> failedTokens = new ArrayList<>(
+                ArrayList<String> failedTokens = new ArrayList<>(
                         IntStream.range(0, responses.size())
                                 .filter(idx -> !responses.get(idx).isSuccessful())
                                 .mapToObj(tokens::get)
                                 .toList()
                 );
-
+                if(!failedTokens.isEmpty()){
+                    FirebaseMessaging.getInstance().sendAll(messages);
+                }
                 log.error("FCM 메세징 실패 토큰 목록 출력: {}", failedTokens);
             }
             log.info("Fcm 푸시 알람을 전송하였습니다.");
