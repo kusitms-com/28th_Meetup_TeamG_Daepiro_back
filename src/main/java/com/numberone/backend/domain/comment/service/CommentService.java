@@ -14,10 +14,14 @@ import com.numberone.backend.domain.like.entity.CommentLike;
 import com.numberone.backend.domain.like.repository.CommentLikeRepository;
 import com.numberone.backend.domain.member.entity.Member;
 import com.numberone.backend.domain.member.repository.MemberRepository;
+import com.numberone.backend.domain.notification.entity.NotificationEntity;
+import com.numberone.backend.domain.notification.entity.NotificationTag;
+import com.numberone.backend.domain.notification.repository.NotificationRepository;
 import com.numberone.backend.domain.token.util.SecurityContextProvider;
 import com.numberone.backend.exception.notfound.NotFoundArticleException;
 import com.numberone.backend.exception.notfound.NotFoundCommentException;
 import com.numberone.backend.exception.notfound.NotFoundMemberException;
+import com.numberone.backend.support.fcm.service.FcmMessageProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -36,6 +40,8 @@ public class CommentService {
     private final ArticleParticipantRepository articleParticipantRepository;
     private final MemberRepository memberRepository;
     private final CommentLikeRepository commentLikeRepository;
+    private final NotificationRepository notificationRepository;
+    private final FcmMessageProvider fcmMessageProvider;
 
     @Transactional
     public CreateChildCommentResponse createChildComment(
@@ -55,6 +61,19 @@ public class CommentService {
         childComment.updateParent(parentComment);
 
         articleParticipantRepository.save(new ArticleParticipant(article, member));
+
+        Member owner = memberRepository.findById(parentComment.getAuthorId())
+                .orElseThrow(NotFoundMemberException::new);
+        String memberName = member.getNickName() != null ? member.getNickName() : member.getRealName();
+
+        String title = String.format("""
+                나의 댓글에 %s님이 댓글을 달았어요.
+                """, memberName);
+        String body = "대피로에 접속하여 확인하세요!";
+        fcmMessageProvider.sendFcm(owner, title, body, NotificationTag.COMMUNITY);
+        notificationRepository.save(
+                new NotificationEntity(owner, NotificationTag.COMMUNITY, title, body, true)
+        );
 
         return CreateChildCommentResponse.of(childComment);
     }
