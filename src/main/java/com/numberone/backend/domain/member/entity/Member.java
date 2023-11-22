@@ -13,11 +13,13 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.Comment;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Comment("회원 정보")
 @Entity
@@ -86,6 +88,15 @@ public class Member extends BaseTimeEntity {
     @Comment("최근 주소 업데이트 시각")
     private LocalDateTime lastlyUpdatedLocationAt;
 
+    @Comment("시/도")
+    private String lv1;
+
+    @Comment("구/군")
+    private String lv2;
+
+    @Comment("동/읍/면")
+    private String lv3;
+
     public void updateSession(Boolean session) {
         this.session = session;
     }
@@ -137,4 +148,35 @@ public class Member extends BaseTimeEntity {
     public void updateSafety(Boolean isSafety) {
         this.isSafety = isSafety;
     }
+
+    public void updateLv1(String lv1) {
+        this.lv1 = lv1;
+    }
+
+    public void updateLv2(String lv2) {
+        this.lv2 = lv2;
+    }
+
+    public void updateLv3(String lv3) {
+        this.lv3 = lv3;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
+            return false;
+        }
+        Member that = (Member) o;
+        return id != null && Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
+
 }
