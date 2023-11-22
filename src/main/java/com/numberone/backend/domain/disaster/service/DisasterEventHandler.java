@@ -120,8 +120,6 @@ public class DisasterEventHandler {
         List<Long> memberIdListByOnlyPresentLocation = memberRepository.findAllByLocation(disasterLocation);
         log.info("위험 지역에 위치한 회원의 가족에게 알림을 보냅니다.");
         // 해당 회원의 가족에게 알림을 보낸다.
-        String messageToFriend = "";
-        String titleToFriend = "";
         memberIdListByOnlyPresentLocation.forEach(memberId -> {
             Member member = memberRepository.findById(memberId)
                     .orElseThrow(NotFoundMemberException::new);
@@ -131,21 +129,17 @@ public class DisasterEventHandler {
 
             List<String> friendFcmTokens = friendList.stream().map(Member::getFcmToken).filter(Objects::nonNull).toList();
 
-
             String memberName = member.getRealName() != null ? member.getRealName() : member.getNickName();
-            fcmMessageProvider.sendFcmToMembers(
-                    friendFcmTokens,
-                    String.format("가족 위험상태 변경 알림"),
-                    String.format("""
+            String title = "가족 위험상태 변경 알림";
+            String body =   String.format("""
                             %s님이 위험 지역에 있어요.                     
                             지금 바로 %s님에게 안부를 물어보세요!
-                            """, memberName, memberName),
-                    NotificationTag.FAMILY
-            );
+                            """, memberName, memberName);
+            fcmMessageProvider.sendFcmToMembers(friendFcmTokens, title, body, NotificationTag.FAMILY);
 
             friendList.forEach(friend ->
                     notificationRepository.save(
-                            new NotificationEntity(friend, NotificationTag.FAMILY, titleToFriend, messageToFriend, true)
+                            new NotificationEntity(friend, NotificationTag.FAMILY, title, body, true)
                     )
             );
         });
