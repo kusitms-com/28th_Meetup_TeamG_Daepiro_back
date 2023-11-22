@@ -46,11 +46,13 @@ public class DisasterService {
     private final ConversationRepository conversationRepository;
     private final ApplicationEventPublisher eventPublisher;
 
+    @Transactional
     public LatestDisasterResponse getLatestDisaster(String email, LatestDisasterRequest latestDisasterRequest) {
         String address = locationProvider.pos2address(latestDisasterRequest.getLatitude(), latestDisasterRequest.getLongitude());
         LocalDateTime time = LocalDateTime.now().minusDays(1);
         Set<Disaster> disasters = new HashSet<>(disasterRepository.findDisastersInAddressAfterTime(address, time));
         Member member = memberService.findByEmail(email);
+        member.updateGps(latestDisasterRequest.getLatitude(), latestDisasterRequest.getLongitude(), address);
         for (NotificationRegion notificationRegion : member.getNotificationRegions()) {
             disasters.addAll(disasterRepository.findDisastersInAddressAfterTime(notificationRegion.getLocation(), time));
         }
