@@ -7,7 +7,9 @@ import com.numberone.backend.domain.friendship.entity.Friendship;
 import com.numberone.backend.domain.friendship.repository.FriendshipRepository;
 import com.numberone.backend.domain.member.entity.Member;
 import com.numberone.backend.domain.member.repository.MemberRepository;
+import com.numberone.backend.domain.notification.entity.NotificationEntity;
 import com.numberone.backend.domain.notification.entity.NotificationTag;
+import com.numberone.backend.domain.notification.repository.NotificationRepository;
 import com.numberone.backend.domain.token.util.SecurityContextProvider;
 import com.numberone.backend.exception.badrequest.InvalidInviteTypeException;
 import com.numberone.backend.exception.notfound.NotFoundFriendshipException;
@@ -32,6 +34,7 @@ public class FriendshipService {
     private final MemberRepository memberRepository;
     private final FriendshipRepository friendshipRepository;
     private final FcmMessageProvider fcmMessageProvider;
+    private final NotificationRepository notificationRepository;
 
     @Transactional
     public InviteFriendResponse inviteFriend(Long memberId) {
@@ -92,10 +95,14 @@ public class FriendshipService {
         String memberName = member.getRealName() != null ? member.getRealName() : member.getNickName();
         String friendName = friend.getRealName() != null ? friend.getRealName() : friend.getNickName();
 
-        String title = String.format("[ %s님! %s님께서 회원님이 안전한지 걱정하고 있어요. 🥲]", friendName, memberName);
-        String body = String.format(" %s님께 현재 상태를 보내볼까요? ", memberName);
-
+        String title = "긴급!";
+        String body = String.format("""
+                %s님이 안부를 궁금해하고 있어요.
+                걱정하고 있을 %s님을 위해 빨리 연락해주세요!""", memberName, memberName);
         fcmMessageProvider.sendFcm(friend, title, body, NotificationTag.FAMILY);
+        notificationRepository.save(
+                new NotificationEntity(friend, NotificationTag.FAMILY, title, body, true)
+        );
 
         return SendFcmFriendResponse.builder()
                 .title(title)

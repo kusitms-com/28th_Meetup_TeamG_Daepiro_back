@@ -4,9 +4,11 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.numberone.backend.domain.notification.entity.NotificationEntity;
 import com.numberone.backend.domain.notification.entity.NotificationTag;
 import com.querydsl.core.annotations.QueryProjection;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @ToString
 @Builder
@@ -21,6 +23,8 @@ public class NotificationTabResponse {
     private LocalDateTime createdAt;
     private String title;
     private String body;
+    @Schema(defaultValue = "서울특별시 OO구 OO동")
+    private String location;
 
 
     @QueryProjection
@@ -36,6 +40,8 @@ public class NotificationTabResponse {
         this.title = notification.getTitle();
         this.body = notification.getBody();
         this.disasterTagDetail = notification.getTagDetail();
+        this.location = Optional.ofNullable(notification.getLocation())
+                .orElse("");
     }
 
 }
