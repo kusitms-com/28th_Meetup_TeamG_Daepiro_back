@@ -18,7 +18,9 @@ import com.numberone.backend.domain.like.entity.ArticleLike;
 import com.numberone.backend.domain.like.repository.ArticleLikeRepository;
 import com.numberone.backend.domain.member.entity.Member;
 import com.numberone.backend.domain.member.repository.MemberRepository;
+import com.numberone.backend.domain.notification.entity.NotificationEntity;
 import com.numberone.backend.domain.notification.entity.NotificationTag;
+import com.numberone.backend.domain.notification.repository.NotificationRepository;
 import com.numberone.backend.domain.notificationregion.entity.NotificationRegion;
 import com.numberone.backend.domain.notificationregion.repository.NotificationRegionRepository;
 import com.numberone.backend.domain.token.util.SecurityContextProvider;
@@ -42,8 +44,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static com.numberone.backend.support.notification.NotificationMessage.ARTICLE_COMMENT_FCM_ALARM;
-
 @Slf4j
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -57,6 +57,7 @@ public class ArticleService {
     private final CommentRepository commentRepository;
     private final ArticleLikeRepository articleLikeRepository;
     private final NotificationRegionRepository notificationRegionRepository;
+    private final NotificationRepository notificationRepository;
     private final S3Provider s3Provider;
     private final LocationProvider locationProvider;
     private final FcmMessageProvider fcmMessageProvider;
@@ -217,8 +218,18 @@ public class ArticleService {
                 .orElseThrow(NotFoundMemberException::new);
 
         articleParticipantRepository.save(new ArticleParticipant(article, member));
-        // 게시글 작성자에게 알림을 보낸다.
-        fcmMessageProvider.sendFcm(articleOwner, ARTICLE_COMMENT_FCM_ALARM, NotificationTag.COMMUNITY);
+
+
+        String memberName = member.getNickName() != null ? member.getNickName() : member.getRealName();
+        String title = String.format("""
+                나의 게시글에 %s님이 댓글을 달았어요.""", memberName);
+        String body = "대피로에 접속하여 확인하세요!";
+
+        fcmMessageProvider.sendFcm(articleOwner, title, body, NotificationTag.COMMUNITY);
+        notificationRepository.save(
+                new NotificationEntity(articleOwner, NotificationTag.COMMUNITY, title, body, true)
+        );
+
         return CreateCommentResponse.of(savedComment);
     }
 
