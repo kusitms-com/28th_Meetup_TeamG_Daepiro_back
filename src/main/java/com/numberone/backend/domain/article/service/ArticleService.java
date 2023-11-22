@@ -222,8 +222,7 @@ public class ArticleService {
 
         String memberName = member.getNickName() != null ? member.getNickName() : member.getRealName();
         String title = String.format("""
-                나의 게시글에 %s님이 댓글을 달았어요.
-                """, memberName);
+                나의 게시글에 %s님이 댓글을 달았어요.""", memberName);
         String body = "대피로에 접속하여 확인하세요!";
 
         fcmMessageProvider.sendFcm(articleOwner, title, body, NotificationTag.COMMUNITY);

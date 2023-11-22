@@ -98,8 +98,7 @@ public class FriendshipService {
         String title = "긴급!";
         String body = String.format("""
                 %s님이 안부를 궁금해하고 있어요.
-                걱정하고 있을 %s님을 위해 빨리 연락해주세요!
-                """, memberName, memberName);
+                걱정하고 있을 %s님을 위해 빨리 연락해주세요!""", memberName, memberName);
         fcmMessageProvider.sendFcm(friend, title, body, NotificationTag.FAMILY);
         notificationRepository.save(
                 new NotificationEntity(friend, NotificationTag.FAMILY, title, body, true)

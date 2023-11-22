@@ -45,11 +45,6 @@ public class FcmMessageProvider {
             log.info("[FCM Message] {} : {}", title, body);
         } catch (Exception e) {
             log.error("Fcm 푸시 알람을 전송하는 도중에 에러가 발생했습니다. {}", e.getMessage());
-            try {
-                FirebaseMessaging.getInstance().send(message); // 재발송
-            } catch (Exception ex) {
-                return;
-            }
         }
     }
 
@@ -79,9 +74,6 @@ public class FcmMessageProvider {
                                 .mapToObj(tokens::get)
                                 .toList()
                 );
-                if(!failedTokens.isEmpty()){
-                    FirebaseMessaging.getInstance().sendAll(messages);
-                }
                 log.error("FCM 메세징 실패 토큰 목록 출력: {}", failedTokens);
             }
             log.info("Fcm 푸시 알람을 전송하였습니다.");
