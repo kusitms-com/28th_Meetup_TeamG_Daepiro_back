@@ -53,6 +53,24 @@ public class DisasterService {
         Set<Disaster> disasters = new HashSet<>(disasterRepository.findDisastersInAddressAfterTime(address, time));
         Member member = memberService.findByEmail(email);
         member.updateGps(latestDisasterRequest.getLatitude(), latestDisasterRequest.getLongitude(), address);
+        String[] locationTokens = member.getLocation().split(" ");
+        switch (locationTokens.length) {
+            case 1 -> {
+                // 서울특별시
+                member.updateLv1(locationTokens[0]);
+            }
+            case 2 -> {
+                // 서울특별시 광진구
+                member.updateLv1(locationTokens[0]);
+                member.updateLv2(locationTokens[1]);
+            }
+            case 3 -> {
+                // 서울특별시 광진구 자양동
+                member.updateLv1(locationTokens[0]);
+                member.updateLv2(locationTokens[1]);
+                member.updateLv3(locationTokens[2]);
+            }
+        }
         for (NotificationRegion notificationRegion : member.getNotificationRegions()) {
             disasters.addAll(disasterRepository.findDisastersInAddressAfterTime(notificationRegion.getLocation(), time));
         }
