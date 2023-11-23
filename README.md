@@ -281,7 +281,7 @@ https://github.com/Kusitms-NumberOne/Android/tree/develop/apk
 
 ## **💻 Technology**
 
-### System Architecture
+### System Architecture
 ![대피로 서비스 아키텍쳐](https://github.com/nohy6630/readme_test/assets/129354455/e66ce90b-f032-483e-80c4-28e391038ab0)
 
 ### Deploy Flow
