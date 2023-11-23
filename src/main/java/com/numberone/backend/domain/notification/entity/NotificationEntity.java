@@ -110,7 +110,7 @@ public class NotificationEntity extends BaseTimeEntity {
             case MISSING -> this.tagDetail = "실종";
             case OTHERS -> this.tagDetail = "기타";
         }
-        this.title = String.format("%s 사고 발생!", tagDetail);
+        this.title = String.format("%s %s 발생",location, tagDetail);
     }
 
 }
