@@ -1,13 +1,16 @@
+### 설치 apk 경로
+https://github.com/Kusitms-NumberOne/Android/tree/develop/apk
 
 # 🌟 서비스명
 
-![메인 이미지](./image/main_image.png)
+![메인 이미지](https://github.com/Kusitms-NumberOne/.github/blob/main/profile/image/main_image.png)
 
 <br>
 
 > ‘대피로’는 위기 상황이 발생했을때 정확하고 신속하게 대응할 수 있도록 돕는 안전•재난 알림 서비스입니다. 
 
 <br>
+
 
 ## 서비스 소개를 적어주세요.
 ### 가장 안전한 길로 안내하는 통로, 안전 재난 알림 서비스 ‘대피로'
@@ -120,13 +123,13 @@
 
 대피로’는 1)사용자 맞춤형 지역 설정 및 재난 유형 설정을 통해 받고 싶은 알림을 수신하여, 기존 재난문자의 문제점을 해결하고자 합니다. 구체적인 정보가 부족하고 불필요한 내용이 반복되고 있는 재난문자를 문제로 정의하고 이를 해결하기 위한 ‘대피로’만의 사용자 맞춤 기능을 제공합니다. 또한 재난문자가 제공하지 않는 2)재난상황 에 대한 구체적인 정보를 공동체의 연결을 통해 공유합니다.
 
-![경쟁사분석 이미지](./image/rival_analysis.png)
+![경쟁사분석 이미지](https://github.com/Kusitms-NumberOne/.github/blob/main/profile/image/rival_analysis.png)
 
 <br>
 
 ### 2️⃣ 목표 시장
 
-![목표시장 이미지](./image/target_market.png)
+![목표시장 이미지](https://github.com/Kusitms-NumberOne/.github/blob/main/profile/image/target_market.png)
 
 + #### 목표 시장/타겟군이 넓은 이유
     + 재난 문자는 전국민을 대상으로 발송되는 국민들에게 필요한 정보 전달 매체이며, 국민재난안전포털에 따르면 연간 50,000건에 달하는 많은 송신량이 확인됨.
@@ -153,8 +156,8 @@
 
 ### 페르소나 설정 
 
-![페르소나1 이미지](./image/persona1.png)
-![페르소나2 이미지](./image/persona2.png)
+![페르소나1 이미지](https://github.com/Kusitms-NumberOne/.github/blob/main/profile/image/persona1.png)
+![페르소나2 이미지](https://github.com/Kusitms-NumberOne/.github/blob/main/profile/image/persona2.png)
 
 
 
@@ -173,7 +176,7 @@
 
 본 서비스는 아래와 같은 핵심 가치를 지니고 있으며 그에 따른 기능을 제공합니다.
 
-![프로덕트가치 이미지](./image/product_core_value.png)
+![프로덕트가치 이미지](https://github.com/Kusitms-NumberOne/.github/blob/main/profile/image/product_core_value.png)
 
 
 + #### Personalization : 맞춤형 정보
@@ -192,7 +195,7 @@
 
 ### IA
 
-![정보구조도 이미지](./image/IA.png)
+![정보구조도 이미지](https://github.com/Kusitms-NumberOne/.github/blob/main/profile/image/IA.png)
 
 <br>
 
@@ -201,7 +204,7 @@
 
 **서비스 플로우**
 
-![서비스 흐름](./image/userflow.png)
+![서비스 흐름](https://github.com/Kusitms-NumberOne/.github/blob/main/profile/image/userflow.png)
 
 <br>
 
@@ -209,27 +212,27 @@
 
 **재난 정보 파악**
 
-![재난정보 흐름](./image/firstflow.png)
+![재난정보 흐름](https://github.com/Kusitms-NumberOne/.github/blob/main/profile/image/firstflow.png)
 
 <br>
 
 **가족 안부 파악**
 
-![가족 흐름](./image/familyflow.png)
+![가족 흐름](https://github.com/Kusitms-NumberOne/.github/blob/main/profile/image/familyflow.png)
 
 <br> 
 
 
 **커뮤니티 게시물 파악**
 
-![가족 흐름](./image/communityflow.png)
+![가족 흐름](https://github.com/Kusitms-NumberOne/.github/blob/main/profile/image/communityflow.png)
 
 <br> 
 
 
 **피해 지역 후원**
 
-![후원 흐름](./image/supportflow.png)
+![후원 흐름](https://github.com/Kusitms-NumberOne/.github/blob/main/profile/image/supportflow.png)
 
 <br> 
 
@@ -239,28 +242,28 @@
 
 + #### '대피로' 주요 기능 
     + 재난문자 수신 필터링을 통한 사용자 맞춤형 정보 전달
-      ![기능1](./image/function1.png)
+      ![기능1](https://github.com/Kusitms-NumberOne/.github/blob/main/profile/image/function1.png)
       
       <br>
       
     + 행동요령 및 주변 대피소 정보 제공을 통한 혼란 최소화
-      ![기능2](./image/function2.png)
+      ![기능2](https://github.com/Kusitms-NumberOne/.github/blob/main/profile/image/function2.png)
       
       <br>
       
     + 재난 상황 및 동네 안전 정보 공유가 가능한 커뮤니티
-      ![기능3](./image/function3_1.png)
+      ![기능3](https://github.com/Kusitms-NumberOne/.github/blob/main/profile/image/function3_1.png)
       
       <br>
       
     + 가족의 위험/안전 상태 실시간 확인으로 불안감 해소
-      ![기능4](./image/function4.png)
+      ![기능4](https://github.com/Kusitms-NumberOne/.github/blob/main/profile/image/function4.png)
 
 
 
 ## 📊 서비스 비즈니스 모델
 
-![비즈니스모델](./image/bm_1.png)
+![비즈니스모델](https://github.com/Kusitms-NumberOne/.github/blob/main/profile/image/bm_1.png)
  
 후원 페이지에 재난과 관련된 후원을 노출시킴으로서 후원 센터에게는 후원 참여자 모집의 도움을 줌.
 
@@ -269,7 +272,7 @@
 
 ## **🎨 디자인 무드보드**
 
-![디자인 이미지](./image/design_image.png)
+![디자인 이미지](https://github.com/Kusitms-NumberOne/.github/blob/main/profile/image/design_image.png)
 <br>
 ‘대피로’는 위기 상황이 발생했을때 정확하고 신속하게 대응할 수 있도록 돕는 안전•재난 알림 서비스입니다. 안전이라는 서비스 정체성을 살리며 신뢰성 상기시킬 수 있는 오렌지와 쿨그레이 컬러를 선정하였으며, 단순하고 직관적인 UI 디자인을 통해 사용자가 위기 상황을 정확하게 인지할 수 있도록 돕습니다.
 
@@ -278,14 +281,17 @@
 
 ## **💻 Technology**
 
-### 🔍 System Architecture
+### System Architecture
 ![대피로 서비스 아키텍쳐](https://github.com/nohy6630/readme_test/assets/129354455/e66ce90b-f032-483e-80c4-28e391038ab0)
 
-### 🔍 Deploy Flow
+### Deploy Flow
 ![AWS 네트워크 다이어그램](https://github.com/nohy6630/readme_test/assets/129354455/4d97d478-536a-4df4-838a-ec1975a832ca)
 
-### 🔍 재난문자 발생 로직
+### 재난문자 발생 로직
 ![image](https://github.com/nohy6630/readme_test/assets/129354455/c9fa3c8e-9999-4141-a076-045cf334df56)
+
+### ERD
+![KakaoTalk_Image_2023-11-23-22-44-02](https://github.com/Kusitms-NumberOne/.github/assets/129354455/220b6a39-da3d-44f6-a362-6d5e9d134b20)
 
 
 
@@ -308,7 +314,7 @@
       ![Redis](https://img.shields.io/badge/Redis-%23DC382D?logo=redis&logoColor=white) 
 
 
-## 기술 스택 선정 이유
+## 🔍 기술 스택 선정 이유
 ### Backend
 
 | 기술 스택 | 설명 |
