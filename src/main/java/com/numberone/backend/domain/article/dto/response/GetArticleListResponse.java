@@ -1,5 +1,6 @@
 package com.numberone.backend.domain.article.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.numberone.backend.domain.article.entity.Article;
 import com.numberone.backend.domain.article.entity.ArticleStatus;
 import com.numberone.backend.domain.article.entity.ArticleTag;
@@ -26,6 +27,7 @@ public class GetArticleListResponse {
     private String address;
     private String ownerNickName;
     private Long ownerId;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm", timezone = "Asia/Seoul")
     private LocalDateTime createdAt;
     private ArticleStatus articleStatus;
     private String thumbNailImageUrl;
@@ -42,12 +44,23 @@ public class GetArticleListResponse {
         this.id = article.getId();
         this.title = article.getTitle();
         this.content = article.getContent();
-        this.address = article.getAddress();
         this.ownerId = ownerId;
         this.createdAt = article.getCreatedAt();
         this.articleStatus = article.getArticleStatus();
         this.thumbNailImageId = thumbNailImageId;
         this.articleLikeCount = article.getLikeCount();
+        String articleAddress = article.getAddress();
+        if(!articleAddress.isEmpty()){
+            String[] elements = articleAddress.split(" ");
+            switch (elements.length){
+                case 3 -> this.address = elements[2];
+                case 2 -> this.address = elements[1];
+                case 1 -> this.address = elements[0];
+                default -> this.address = "";
+            }
+        } else {
+            this.address = "";
+        }
     }
 
     public void setOwnerNickName(String nickName){

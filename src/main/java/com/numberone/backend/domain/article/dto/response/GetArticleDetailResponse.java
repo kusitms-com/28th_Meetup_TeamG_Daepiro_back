@@ -1,5 +1,6 @@
 package com.numberone.backend.domain.article.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.numberone.backend.domain.article.entity.Article;
 import com.numberone.backend.domain.article.entity.ArticleStatus;
 import com.numberone.backend.domain.article.entity.ArticleTag;
@@ -20,7 +21,9 @@ public class GetArticleDetailResponse {
     // 게시글 관련
     private Long articleId;
     private Integer likeCount;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm", timezone = "Asia/Seoul")
     private LocalDateTime createdAt;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm", timezone = "Asia/Seoul")
     private LocalDateTime modifiedAt;
     private String title;
     private String content;
@@ -47,6 +50,23 @@ public class GetArticleDetailResponse {
             Member owner,
             List<Long> memberLikedArticleList,
             Long commentCount ) {
+
+        String address = "";
+
+        String articleAddress = article.getAddress();
+        if(!articleAddress.isEmpty()){
+            String[] elements = articleAddress.split(" ");
+            switch (elements.length){
+                case 3 -> address = elements[2];
+                case 2 -> address = elements[1];
+                case 1 -> address = elements[0];
+                default ->address = "";
+            }
+        } else {
+            address = "";
+        }
+
+
         return GetArticleDetailResponse.builder()
                 .articleId(article.getId())
                 .title(article.getTitle())
@@ -63,7 +83,7 @@ public class GetArticleDetailResponse {
                 .ownerNickName(owner.getNickName())
                 .imageUrls(imageUrls)
                 .thumbNailImageUrl(thumbNailImageUrl)
-                .address(article.getAddress())
+                .address(address)
                 .ownerProfileImageUrl(owner.getProfileImageUrl())
                 .isLiked(memberLikedArticleList.contains(article.getId()))
                 .articleTag(article.getArticleTag())
