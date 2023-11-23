@@ -87,7 +87,9 @@ public class DisasterDataCollector {
                 Long disasterNum = Long.parseLong(disaster.getMsgId());
                 if (disasterNum <= latestDisasterNum)
                     break;
-                String[] locations = disaster.getLocationName().split(",");
+                String[] locations = Arrays.stream(disaster.getLocationName().split(","))
+                        .distinct()
+                        .toArray(String[]::new);
                 for (String loc : locations) {
                     if (disasterTypeMap.get(disasterNum).equals(DisasterType.OTHERS) &&
                             (disaster.getMsg().contains("실종") || disaster.getMsg().contains("목격") || disaster.getMsg().contains("배회")))
