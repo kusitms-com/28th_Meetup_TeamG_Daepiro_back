@@ -13,5 +13,5 @@ public class ArticleSearchParameter {
     private Long lastArticleId;
     private Double longitude;
     private Double latitude;
-    private String regionLv2; // 구
+    private String regionLv2; //  구
 }
