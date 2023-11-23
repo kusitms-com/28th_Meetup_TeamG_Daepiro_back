@@ -13,7 +13,10 @@ import com.numberone.backend.exception.notfound.NotFoundRefreshTokenException;
 import com.numberone.backend.properties.KakaoProperties;
 import com.numberone.backend.properties.NaverProperties;
 import com.numberone.backend.domain.token.util.JwtUtil;
+import com.numberone.backend.properties.TokenPeriodProperties;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +27,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class TokenService {
     private final JwtUtil jwtUtil;
     private final RestTemplate restTemplate;
@@ -32,8 +36,7 @@ public class TokenService {
     private final MemberService memberService;
     private final TokenRepository tokenRepository;
     private final MemberRepository memberRepository;
-    private long refreshPeroid = 1000L * 60 * 60 * 24 * 14;//14일
-    private long accessPeroid = 1000L * 60 * 30;//30분
+    private final TokenPeriodProperties tokenPeriodProperties;
 
     @Transactional
     public GetTokenResponse loginKakao(GetTokenRequest tokenRequest) {
@@ -78,8 +81,8 @@ public class TokenService {
         Token token = tokenRepository.findByRefreshToken(tokenRequest.getToken())
                 .orElseThrow(NotFoundRefreshTokenException::new);
         String email = jwtUtil.getEmail(tokenRequest.getToken());
-        String newAccessToken = jwtUtil.createToken(email, accessPeroid);
-        String newRefreshToken = jwtUtil.createToken(email, refreshPeroid);
+        String newAccessToken = jwtUtil.createToken(email, tokenPeriodProperties.getAccess());
+        String newRefreshToken = jwtUtil.createToken(email, tokenPeriodProperties.getRefresh());
         token.update(newAccessToken, newRefreshToken);
         tokenRepository.save(token);//redis의 경우 jpa와 달리 transactional을 이용해도 데이터 수정시에 명시적으로 save를 해줘야 함
         return RefreshTokenResponse.of(newAccessToken, newRefreshToken);
@@ -96,8 +99,8 @@ public class TokenService {
                     .orElseThrow(WrongAccessTokenException::new);
             return GetTokenResponse.of(token.getAccessToken(), token.getRefreshToken(), isNewMember);
         } else {
-            String refreshToken = jwtUtil.createToken(email, refreshPeroid);
-            String accessToken = jwtUtil.createToken(email, accessPeroid);
+            String refreshToken = jwtUtil.createToken(email, tokenPeriodProperties.getRefresh());
+            String accessToken = jwtUtil.createToken(email, tokenPeriodProperties.getAccess());
             Token token = tokenRepository.save(Token.of(email, accessToken, refreshToken));
             return GetTokenResponse.of(token.getAccessToken(), token.getRefreshToken(), isNewMember);
         }
