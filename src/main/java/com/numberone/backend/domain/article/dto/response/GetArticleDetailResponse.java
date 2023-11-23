@@ -1,5 +1,6 @@
 package com.numberone.backend.domain.article.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.numberone.backend.domain.article.entity.Article;
 import com.numberone.backend.domain.article.entity.ArticleStatus;
 import com.numberone.backend.domain.article.entity.ArticleTag;
@@ -20,7 +21,9 @@ public class GetArticleDetailResponse {
     // 게시글 관련
     private Long articleId;
     private Integer likeCount;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm", timezone = "Asia/Seoul")
     private LocalDateTime createdAt;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm", timezone = "Asia/Seoul")
     private LocalDateTime modifiedAt;
     private String title;
     private String content;
