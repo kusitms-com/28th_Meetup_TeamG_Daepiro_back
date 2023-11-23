@@ -58,7 +58,7 @@ public class DisasterEventHandler {
                     List<DisasterType> enableDisasterTypes = notificationDisasterRepository.findAllByMemberId(memberId)
                             .stream().map(NotificationDisaster::getDisasterType).toList();
                     return enableDisasterTypes.contains(disasterEvent.getType());
-                }).map(memberId -> {
+                }).toList().stream().map(memberId -> {
             Member member = memberRepository.findById(memberId)
                     .orElseThrow(NotFoundMemberException::new);
             NotificationEntity savedNotificationEntity = notificationRepository.save(
@@ -89,20 +89,27 @@ public class DisasterEventHandler {
                 .toList();
 
 
-        log.info("회원이 재난문자 알림을 받고자 하는 지역에 대한 푸시알람을 중복을 제거하여 보냅니다.");
+        log.info("회원이 재난문자 알림을 받고자 하는 지역에 대한 푸시알람을 중복을 제거하여 보냅니다. 이때 재난 유형도 필터링합니다.");
         // 해당 회원의 온보딩 리스트 및 알림을 허용하는 재난 유형을 기준으로 알림을 보낸다.
         List<String> targetFcmsByOnboardingRegionsAndDisasterTypes = distinctMemberIdListByOnboardingRegions.stream()
                 .flatMap(memberId -> {
                     Member member = memberRepository.findById(memberId)
                             .orElseThrow(NotFoundMemberException::new);
-                    boolean isMatched = notificationRegionRepository.findByMemberId(memberId)
+                    boolean isRegionMatched = notificationRegionRepository.findByMemberId(memberId)
                             .stream().anyMatch(
                                     region -> region.getLocation().contains(disasterLocation)
                             );
-                    notificationRepository.save(
-                            new NotificationEntity(member, disasterEvent.getType(), disasterEvent.getMessage(), true, disasterLocation)
-                    );
-                    return isMatched ? Stream.of(member.getFcmToken()) : null;
+                    // <-------- 요부분
+                    List<DisasterType> enableDisasterTypes = notificationDisasterRepository.findAllByMemberId(memberId)
+                            .stream().map(NotificationDisaster::getDisasterType).toList();
+                    boolean isDisasterTypeMatched = enableDisasterTypes.contains(disasterEvent.getType());
+
+                    if(isRegionMatched && isDisasterTypeMatched) {
+                        notificationRepository.save(
+                                new NotificationEntity(member, disasterEvent.getType(), disasterEvent.getMessage(), true, disasterLocation)
+                        );
+                    }
+                    return (isRegionMatched && isDisasterTypeMatched) ? Stream.of(member.getFcmToken()) : null;
                 }).filter(Objects::nonNull).toList();
         fcmMessageProvider.sendFcmToMembers(targetFcmsByOnboardingRegionsAndDisasterTypes, title, message, NotificationTag.DISASTER);
     }
